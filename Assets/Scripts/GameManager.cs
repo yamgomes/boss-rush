@@ -15,10 +15,11 @@ public class GameManager : MonoBehaviour
     public GameObject terrain;
     public Text warningText;
     public Text lifeText;
-    private bool won = false;
     public Image healthBar;
     public GameObject player;
     public GameObject missle;
+    public GameObject[] meteorList;
+    public float time = 0f;
     private void Awake()
     {
         instance = this;
@@ -31,11 +32,13 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         InvokeRepeating("Attack", 5f, 10f);
+        PlayerPrefs.SetInt("win", 0);
     }
 
     // Update is called once per frame
     void Update()
     {
+        time += Time.deltaTime;
         healthBar.fillAmount = (float)enemyHealth / 20;
         lifeText.text = "Vidas: " + playerHealth;
     }
@@ -45,8 +48,13 @@ public class GameManager : MonoBehaviour
         switch (attack)
         {
             case 0:
-                // warningText.text = "Chuva de meteoros";
-                // Debug.Log("Attack 1");
+                warningText.text = "Chuva de meteoros";
+                foreach (var meteor in meteorList)
+                {
+                    Vector3 position = GetRandomBlock();
+                    position.y = 5;
+                    Instantiate(meteor, position, Quaternion.identity);
+                }
                 break;
             case 1:
                 // warningText.text = "Ataque";
@@ -64,7 +72,7 @@ public class GameManager : MonoBehaviour
         if (rotations == 0)
         {
             rotations = 0;
-            Vector3 pos = terrain.transform.GetChild(Random.Range(0, 18)).transform.position;
+            Vector3 pos = GetRandomBlock();
             platform.transform.position = new Vector3(pos.x, platform.transform.position.y, pos.z);
 
         }
@@ -77,16 +85,15 @@ public class GameManager : MonoBehaviour
         platform.transform.position = new Vector3(platform.transform.position.x, platform.transform.position.y, platform.transform.position.z - 30);
         if (enemyHealth <= 0)
         {
-            Debug.Log("Enemy Dead");
-            won = true;
+            PlayerPrefs.SetInt("win", 1);
             GameOver();
         }
 
     }
     void GameOver()
     {
-        Debug.Log("Game Over");
-        SceneManager.LoadScene("GameOver", LoadSceneMode.Additive);
+        PlayerPrefs.SetInt("time", (int)time);
+        SceneManager.LoadScene("GameOver");
 
     }
     public void LoseHp()
@@ -94,12 +101,13 @@ public class GameManager : MonoBehaviour
         playerHealth -= 1;
         if (playerHealth <= 0)
         {
+            PlayerPrefs.SetInt("win", 0);
             GameOver();
         }
     }
-    public bool GetVictory()
-    {
-        return won;
+
+    public Vector3 GetRandomBlock(){
+        return terrain.transform.GetChild(Random.Range(0, 18)).transform.position;
     }
 }
 

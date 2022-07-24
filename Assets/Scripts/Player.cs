@@ -59,7 +59,9 @@ public class Player : MonoBehaviour
         if (transform.position.y < -3)
         {
             controller.enabled = false;
-            transform.position = new Vector3(0, 0, 0);
+            Vector3 newPosition = GameManager.GetInstance().GetRandomBlock() + new Vector3(-0.5f, 0, 0.5f);
+            newPosition.y = 0;
+            transform.position = newPosition;
             GameManager.GetInstance().LoseHp();
             controller.enabled = true;
         }
