@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -48,13 +49,19 @@ public class Player : MonoBehaviour
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
         }
 
+
         playerVelocity.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
-
+    }
+    private void LateUpdate()
+    {
         //if player is below y = -1, then player returns to 0,0,0
         if (transform.position.y < -3)
         {
+            controller.enabled = false;
             transform.position = new Vector3(0, 0, 0);
+            GameManager.GetInstance().LoseHp();
+            controller.enabled = true;
         }
     }
 }
