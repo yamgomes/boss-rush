@@ -10,8 +10,10 @@ public class GameOverManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if( !GameManager.GetInstance().GetVictory()){
+        if(!GameManager.GetInstance().GetVictory()){
             finalText.text = "Tente de novo!\nExiste esperança ";
+        } else {
+            finalText.text = "Muito bem!\nO inimigo foi derrotado!";
         }
     }
 
